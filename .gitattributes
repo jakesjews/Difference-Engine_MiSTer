@@ -1,0 +1,2 @@
+# Table files are exactly 256 bytes; Windows checkouts must retain LF endings.
+programs/*.de2 text eol=lf

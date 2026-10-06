@@ -1,49 +1,110 @@
-# Template core for MiSTer
+# Babbage's Difference Engine for MiSTer
 
-## General description
-This core contains the latest version of framework and will be updated when framework is updated. There will be no releases. This core is only for developers. Besides the framework, core demonstrates the basic usage. New or ported cores should use it as a template.
+Calculate with Difference Engine No. 2: eight columns of 31 decimal wheels, seven orders of difference, and a paper roll of results. Watch the carries, turn the crank, or let it run.
 
-It's highly recommended to follow the notes to keep it standardized for easier maintenance and collaboration with other developers.
+![Difference Engine front panel](docs/images/panel.png)
 
-## Source structure
+## Install
 
-### Legend:
-* `<core_name>` - you have to use the same name where you see this in this manual. Basically it's your core name.
+Download [the core](releases/DifferenceEngine_20261005.rbf?raw=true) and copy it to `_Computer/` on your MiSTer. Optionally copy the files in [`programs/`](programs/) to `games/DifferenceEngine/`.
 
-### Standard MiSTer core should have following folders:
-* `sys` - the framework. Basically it's prohibited to change any files in this folder. Framework updates may erase any customization in this folder. All MiSTer cores have to include sys folder as is from this core.
-* `rtl` - the actual source of core. It's up to the developer how to organize the inner structure of this folder. Exception is pll folder/files (see below).
-* `releases` - the folder where rbf files should be placed. format of each rbf is: <core_name>_YYYYMMDD.rbf (YYYYMMDD is date code of release).
+No ROMs or SDRAM module are needed. Launch the core to start with the museum demonstration.
 
-### Other standard files:
-* `<core_name>.qpf`- quartus project file. Copy it as is and then modify the line `PROJECT_REVISION = "<core_name>"` according to your core name.
-* `<core_name>.qsf` - quartus settings file. In most cases you don't need to modify anything inside (although you may wont to adjust some settings in quartus - this is fine, but keep changes minimal). You also need to watch this file before you make a commit. Quartus in some conditions may "spit" all settings from different files into this file so it will become large. If you see this, then simply revert it to original file.
-* `<core_name>.srf` - optional file to disable some warnings which are safe to disable and make message list more clean, so you will have less chance to miss some important warnings. You are free to modify it.
-* `<core_name>.sdc` - optional file for constraints in case if core require some special constraints. You are free to modify it.
-* `<core_name>.sv` - glue logic between framework and core. This is where you adapt core specific signals to framework.
-* `files.qip` - list of all core files. You need to edit it manually to add/remove files. Quartus will use this file but can't edit it. If you add files in Quartus IDE, then they will be added to `<core_name>.qsf` which is recommended manually move them to `files.qip`.
-* `clean.bat` - windows batch file to clean the whole project from temporary files. In most cases you don't need to modify it.
-* `.gitignore` - list of files should be ignored by git, so temporary files wont be included in commits.
-* `jtag.cdf` - it will be produced when you compile the core. By clicking it in Quartus IDE, you will launch programmer where you can send the core to MiSTer over USB blaster cable (see manual for DE10-nano how to connect it). This file normally is not present on cleaned project and not included in commits.
+## Controls
 
-### PLL:
-Framework implies use of at least one PLL in the core. Framework doesn't contain this PLL but requires it to be placed in `rtl` folder, so `pll` folder and `pll.v`, `pll.qip` files must be present, however PLL settings are up to the core.
+| Key | Action |
+| --- | --- |
+| Space | Run / pause |
+| F2 / F3 | Crank one cycle / advance one phase |
+| F4 / F5 / F6 | Next demonstration / reload / clear |
+| Arrow keys | Select a wheel |
+| 0–9 | Set the selected digit |
+| Enter / Backspace | Turn the selected wheel up / down |
+| Home / End | Select the top / units wheel |
+| F1 | Help |
+| F12 | MiSTer menu |
 
-### Verilog Macros
+Pause before editing wheels. If you stop partway through a cycle, press F2 to finish it first.
 
-The following macros can be defined and will affect the framework features:
+The MiSTer menu selects demonstrations, speed, and `.de2` tables. Squares, cubes, triangular numbers, and a carry cascade are included. You can also map a gamepad through MiSTer's usual joystick setup.
 
-Macro                    |   Effect
--------------------------|---------------------------------
-MISTER_DEBUG_NOHDMI      | Disable HDMI-related modules. Speeds up compilation but only analogue/direct video is available
-MISTER_DUAL_SDRAM        | Changes configuration of FPGA pins to work with dual SDRAM I/O boards
-MISTER_FB                | Allows to use framebuffer from the core
-MISTER_SMALL_VBUF        | Sets a smaller video buffer for the ASCAL
-MISTER_DOWNSCALE_NN      | Ascal's downscale mode
-MISTER_DISABLE_ADAPTIVE  | Disables adaptive scan lines
-MISTER_FB_PALETTE        | Framebuffer palette
+Red pins mark pending carries. The paper keeps the last sixteen results; the leftmost column shows all 31 digits. Step counts start at zero when you load a table.
 
+## Things to try
 
-# Quartus version
-Cores must be developed in **Quartus v17.0.x**. It's recommended to have updates, so it will be **v17.0.2**. Newer versions won't give any benefits to FPGA used in MiSTer, however they will introduce incompatibilities in project settings and it will make harder to maintain the core and collaborate with others. **So please stick to good old 17.0.x version.** You may use either Lite or Standard license.
+Start with the paper on the right. The newest answer is at the bottom. The full answer is in **T**, the leftmost column of wheels. Ignore the leading zeroes.
 
+### Make a list of squares
+
+1. Press **F12** to open the MiSTer menu.
+2. Set **Demonstration** to **Squares**. Choose **Reload demonstration** to start over if Squares was already selected.
+3. Set **Result speed** to **1 second**, then press **F12** to close the menu.
+4. Press **F2** once. Wait until the panel says **PAUSED** again.
+5. Press **F2** a few more times, waiting between presses.
+
+The paper should read:
+
+```text
+Step    Result
+   0         0
+   1         1
+   2         4
+   3         9
+   4        16
+   5        25
+```
+
+You have made a table of `0 × 0`, `1 × 1`, `2 × 2`, and so on. **Space** lets it run by itself; press Space again to pause. **F5** starts the same example over.
+
+Try **Cubes** next. You should get `0, 1, 8, 27, 64, 125`. **Triangular** gives `0, 1, 3, 6, 10, 15`: the number of dots in triangles with one more row each time.
+
+### Make your own counting machine
+
+Let's start at 10 and add 3 on every turn.
+
+1. Close any menus or help, then press **F6**. This clears the table and paper.
+2. Use **Left / Right** until the highlighted wheel is in **T**.
+3. Press **End**, then **Up** once. You are now on the tens digit. Type **1**, then **0**. Typing moves the selection down, so this enters **10**.
+4. Press **Right** to select **D1**, then **End** to reach its bottom digit. Type **3**.
+5. Press **F2**, wait for **PAUSED**, and repeat.
+
+You should get **10, 13, 16, 19, 22…**. T is the starting value; D1 is what gets added each turn. Leave D2 through D7 at zero for a constant increment.
+
+To enter a different number, select its highest nonzero digit and type downwards. For **125**, press End, Up twice, then type 1, 2, 5. Use the number keys to replace a wrong digit. Backspace turns a wheel down by one; it does not delete text.
+
+### See why squares work
+
+Load **Squares** again. **D1** starts at **1**, then becomes **3, 5, 7, 9…** after each complete turn. These are the amounts needed to get from one square to the next:
+
+```text
+0 + 1 = 1
+1 + 3 = 4
+4 + 5 = 9
+9 + 7 = 16
+```
+
+**D2 stays at 2**, making the next increment two larger each time. The engine gets the squares using addition alone.
+
+You can set this up yourself: clear with F6, leave T at zero, put **1** in D1 and **2** in D2. Leave the other columns at zero. Crank with F2.
+
+### Watch a carry
+
+1. In the menu, choose **Carry cascade**, then **Reload demonstration** if needed. Close the menu.
+2. Press **F3** once. The bottom 9 in T becomes 0, and a red pin appears beside it. The carry is waiting.
+3. Press **F3** again. The carry travels through the other 9s, leaving T full of zeroes. A lamp below T marks the carry past the top.
+4. Press **F2** to finish the turn and print the result.
+
+F3 lets you stop between parts of a turn. F2 finishes a whole turn. Usually F2 is the one you want.
+
+### If you lose your place
+
+- **Nothing moves:** close F1 help or the F12 menu. Both pause the engine. At the slowest speed, a turn takes several seconds.
+- **A digit won't change:** pause with Space if the engine is running, then press F2 and wait for PAUSED. You can edit only between complete turns.
+- **Wrong number:** select the wrong wheel and type the right digit. Edits restart the cycle count and clear the paper.
+- **Start the example again:** F5 reloads the table you started from. After F6, that's a blank table. It does not save your hand edits.
+- **Start from nothing:** F6 clears all columns.
+- **Lost an old answer:** the paper holds sixteen results. Reload and crank again to reproduce earlier ones.
+
+For a different polynomial, see [making a difference table](docs/tables.md). Load the resulting `.de2` file through **F12 → Load difference table**.
+
+Inspired by the [PDP-1](https://github.com/MiSTer-devel/PDP1_MiSTer), [Altair 8800](https://github.com/MiSTer-devel/Altair8800_Mister), and [EDSAC](https://github.com/MiSTer-devel/EDSAC_MiSTer) cores. [GPL-2.0](LICENSE).
