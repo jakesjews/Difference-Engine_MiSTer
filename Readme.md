@@ -1,34 +1,39 @@
 # Babbage's Difference Engine for MiSTer
 
-Calculate with Difference Engine No. 2: eight columns of 31 decimal wheels, seven orders of difference, and a paper roll of results. Watch the carries, turn the crank, or let it run.
+Turn the crank to calculate squares, cubes, or a sequence of your own.
 
 ![Difference Engine front panel](docs/images/panel.png)
 
 ## Install
 
-Download [the core](releases/DifferenceEngine_20261005.rbf?raw=true) and copy it to `_Computer/` on your MiSTer. Optionally copy the files in [`programs/`](programs/) to `games/DifferenceEngine/`.
+1. [Download the core](releases/DifferenceEngine_20261005.rbf?raw=true).
+2. Copy the `.rbf` file to `_Computer/` on your MiSTer's SD card.
+3. Launch **DifferenceEngine** from MiSTer's Computer menu.
 
-No ROMs or SDRAM module are needed. Launch the core to start with the museum demonstration.
+No ROMs or SDRAM module are needed. Normal HDMI and direct video both work.
 
 ## Controls
 
 | Key | Action |
 | --- | --- |
 | Space | Run / pause |
-| F2 / F3 | Crank one cycle / advance one phase |
-| F4 / F5 / F6 | Next demonstration / reload / clear |
+| F2 | Turn the crank once |
+| F3 | Advance one part of a turn |
+| F4 | Next demonstration |
+| F5 | Start the current table over |
+| F6 | Clear the table |
 | Arrow keys | Select a wheel |
 | 0–9 | Set the selected digit |
 | Enter / Backspace | Turn the selected wheel up / down |
-| Home / End | Select the top / units wheel |
+| Home / End | Select the top / bottom wheel |
 | F1 | Help |
 | F12 | MiSTer menu |
 
-Pause before editing wheels. If you stop partway through a cycle, press F2 to finish it first.
+F2 produces one new result. Wait for **PAUSED** before pressing it again. Space keeps the engine running until you press it again.
 
-The MiSTer menu selects demonstrations, speed, and `.de2` tables. Squares, cubes, triangular numbers, and a carry cascade are included. You can also map a gamepad through MiSTer's usual joystick setup.
+Use F12 to choose an example or change the speed. Opening help or the menu pauses the engine while you look around. Gamepad controls can be assigned through MiSTer's usual joystick setup.
 
-Red pins mark pending carries. The paper keeps the last sixteen results; the leftmost column shows all 31 digits. Step counts start at zero when you load a table.
+Pause before editing wheels. If you stop partway through a turn, press F2 and wait for PAUSED before editing.
 
 ## Things to try
 
@@ -105,6 +110,6 @@ F3 lets you stop between parts of a turn. F2 finishes a whole turn. Usually F2 i
 - **Start from nothing:** F6 clears all columns.
 - **Lost an old answer:** the paper holds sixteen results. Reload and crank again to reproduce earlier ones.
 
-For a different polynomial, see [making a difference table](docs/tables.md). Load the resulting `.de2` file through **F12 → Load difference table**.
+### Load your own table
 
-Inspired by the [PDP-1](https://github.com/MiSTer-devel/PDP1_MiSTer), [Altair 8800](https://github.com/MiSTer-devel/Altair8800_Mister), and [EDSAC](https://github.com/MiSTer-devel/EDSAC_MiSTer) cores. [GPL-2.0](LICENSE).
+Put `.de2` files in `games/DifferenceEngine/` on your MiSTer, then choose **F12 → Load difference table**. The [supplied tables](programs/) are ready to use. To make a different sequence, follow [making a difference table](docs/tables.md).
